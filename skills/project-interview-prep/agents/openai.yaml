@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Interview Prep"
+  short_description: "Build source-backed project interview narratives"
+  default_prompt: "Use $project-interview-prep to audit this project and prepare source-backed interview materials."
