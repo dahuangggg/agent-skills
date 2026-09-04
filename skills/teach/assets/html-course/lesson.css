@@ -1,0 +1,511 @@
+@font-face {
+  font-family: "Noto Sans SC";
+  src: url("./fonts/noto-sans-sc-chinese-simplified-400-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans SC";
+  src: url("./fonts/noto-sans-sc-chinese-simplified-700-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  --ink: #17211f;
+  --muted: #5b6763;
+  --paper: #ffffff;
+  --canvas: #f2f5f3;
+  --panel: #f7faf8;
+  --line: #cbd5d1;
+  --accent: #00796b;
+  --accent-soft: #e6f3ef;
+  --blue: #2457a6;
+  --amber: #9a5b00;
+  --amber-soft: #fff4dc;
+  --red: #a03333;
+  --red-soft: #fff0ef;
+  --green: #176b43;
+  --green-soft: #e8f5ee;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font: 16px/1.7 "Noto Sans SC", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.lesson-shell,
+.reference-shell {
+  width: min(920px, calc(100% - 32px));
+  margin: 28px auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.lesson-header {
+  padding: 44px 48px 34px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.lesson-kicker {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+h1 {
+  max-width: 20ch;
+  margin: 10px 0 14px;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.15;
+}
+
+h2 {
+  margin: 0 0 16px;
+  font-size: 25px;
+  line-height: 1.3;
+}
+
+h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+p {
+  max-width: 72ch;
+  margin: 10px 0;
+}
+
+code {
+  padding: 1px 5px;
+  background: #edf1ef;
+  color: #7a331e;
+  font-size: 0.92em;
+}
+
+.lead {
+  max-width: 66ch;
+  color: var(--muted);
+  font-size: 19px;
+}
+
+.lesson-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.lesson-section {
+  padding: 34px 48px;
+  border-bottom: 1px solid var(--line);
+}
+
+.lesson-section:last-child {
+  border-bottom: 0;
+}
+
+.objective {
+  padding: 18px 22px;
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+}
+
+.layer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.layer {
+  min-height: 150px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.layer-label {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.layer strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 20px;
+}
+
+.route {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 18px;
+  align-items: start;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+}
+
+.route:first-of-type {
+  border-top: 0;
+}
+
+.route-name {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.route-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.route-node {
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  font-size: 14px;
+}
+
+.route-arrow {
+  color: var(--muted);
+}
+
+.callout {
+  margin-top: 18px;
+  padding: 16px 20px;
+  border-left: 4px solid var(--amber);
+  background: var(--amber-soft);
+}
+
+.retrieval {
+  padding: 22px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+}
+
+.retrieval ol {
+  margin: 12px 0 0;
+  padding-left: 22px;
+}
+
+.quiz-list {
+  display: grid;
+  gap: 14px;
+}
+
+.question {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.choice {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.choice:hover,
+.choice:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid transparent;
+}
+
+.choice.is-selected {
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+.choice.is-correct {
+  border-color: var(--green);
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.choice.is-wrong {
+  border-color: var(--red);
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.feedback {
+  min-height: 28px;
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.feedback.is-correct {
+  color: var(--green);
+}
+
+.feedback.is-wrong {
+  color: var(--red);
+}
+
+.quiz-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.quiz-score {
+  font-weight: 700;
+}
+
+.command {
+  min-height: 42px;
+  padding: 8px 14px;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: var(--ink);
+  color: white;
+  cursor: pointer;
+}
+
+.command:hover,
+.command:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+details {
+  margin-top: 16px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.answer-frame {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.answer-frame dt {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.answer-frame dd {
+  margin: 0;
+}
+
+.practice-plan {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.practice-plan th,
+.practice-plan td {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.practice-plan th {
+  background: #e9efec;
+}
+
+.source-list {
+  padding-left: 22px;
+}
+
+.source-list li {
+  margin: 10px 0;
+}
+
+.reference-shell {
+  padding: 34px 40px;
+}
+
+.reference-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.reference-header h1 {
+  margin-top: 0;
+  font-size: 34px;
+}
+
+.reference-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.reference-block {
+  padding: 16px;
+  border: 1px solid var(--line);
+  break-inside: avoid;
+}
+
+.reference-block h2 {
+  font-size: 18px;
+}
+
+.reference-table {
+  width: 100%;
+  margin-top: 24px;
+  border-collapse: collapse;
+}
+
+.reference-table th,
+.reference-table td {
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.reference-table th {
+  background: #e9efec;
+}
+
+.trap-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.footer-note {
+  margin-top: 28px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+@media (max-width: 680px) {
+  .lesson-shell,
+  .reference-shell {
+    width: 100%;
+    margin: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .lesson-header,
+  .lesson-section,
+  .reference-shell {
+    padding: 28px 18px;
+  }
+
+  .layer-grid,
+  .reference-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .route,
+  .answer-frame {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .choices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quiz-footer,
+  .reference-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .practice-plan,
+  .reference-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  body {
+    background: white;
+    font-size: 12px;
+  }
+
+  .lesson-shell,
+  .reference-shell {
+    width: 100%;
+    margin: 0;
+    border: 0;
+  }
+
+  .lesson-header,
+  .lesson-section,
+  .reference-shell {
+    padding: 16px 0;
+  }
+
+  .command,
+  .quiz-footer {
+    display: none;
+  }
+
+  details > * {
+    display: block;
+  }
+}

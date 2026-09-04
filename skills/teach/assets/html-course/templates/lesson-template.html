@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="面向仓库学习与面试准备的交互式课程模板">
+  <title>课程 03｜请求幂等性设计</title>
+  <!-- 将模板放进 lessons/ 时，公共资源位于 ../assets/。 -->
+  <link rel="stylesheet" href="../assets/lesson.css">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/course-components.css">
+</head>
+<body>
+  <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+
+  <button class="mobile-menu" id="mobile-menu" type="button" aria-controls="site-sidebar" aria-expanded="false">
+    <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+    <span>全部课程</span>
+  </button>
+  <div class="sidebar-scrim" id="sidebar-scrim" aria-hidden="true"></div>
+
+  <aside class="sidebar" id="site-sidebar" aria-label="课程导航">
+    <div class="sidebar-brand">
+      <a href="#">项目深度学习课</a>
+      <span>从源码到可讲述的业务设计</span>
+    </div>
+    <label class="search-box">
+      <span class="sr-only">搜索课程</span>
+      <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input id="site-search" type="search" placeholder="搜索概念、模块、故障" autocomplete="off">
+    </label>
+    <div class="search-results" id="search-results" hidden></div>
+    <!-- 左侧只呈现整门课程的课节与参考资料，不放当前页面的小节锚点。 -->
+    <nav class="sidebar-nav" aria-label="全部课程">
+      <section class="nav-group">
+        <h2>开始</h2>
+        <a class="nav-link" href="#">课程介绍与学习地图</a>
+      </section>
+      <section class="nav-group">
+        <h2>核心业务模块</h2>
+        <a class="nav-link" href="#">01 · 系统与业务全景</a>
+        <a class="nav-link" href="#">02 · 请求生命周期</a>
+        <a class="nav-link is-current" href="#" aria-current="page">03 · 请求幂等性设计</a>
+        <a class="nav-link" href="#">04 · 失败恢复与补偿</a>
+        <a class="nav-link" href="#">05 · 可观测性闭环</a>
+      </section>
+      <section class="nav-group">
+        <h2>参考与训练</h2>
+        <a class="nav-link" href="#">系统架构图</a>
+        <a class="nav-link" href="#">面试速查表</a>
+        <a class="nav-link" href="#">综合自测</a>
+      </section>
+    </nav>
+  </aside>
+
+  <div class="page-layout">
+    <main class="main-content">
+      <nav class="breadcrumbs" aria-label="面包屑">
+        <a href="#">课程首页</a><span>›</span><span>核心业务模块</span>
+      </nav>
+
+      <header class="document-header">
+        <div class="document-kicker">课程 03 · 面试主线 · 中级</div>
+        <h1>请求幂等性：从重复提交到一致性边界</h1>
+        <p>沿着一笔业务请求，理解为什么需要幂等、仓库如何实现，以及如何在面试中讲清楚方案取舍。</p>
+        <div class="document-meta">
+          <span>预计 18 分钟</span>
+          <span>前置：请求生命周期</span>
+          <a href="#">查看课程计划</a>
+        </div>
+      </header>
+
+      <article class="document-body">
+        <section class="learning-objective" aria-labelledby="objective-title">
+          <p class="eyebrow">本节可验证目标</p>
+          <h2 id="objective-title">你将能设计并解释一个幂等写入流程</h2>
+          <p>完成后，你应该能指出幂等键的生成位置、状态写入边界，以及重复请求到达时系统返回什么。</p>
+        </section>
+
+        <h2 id="business">业务背景：为什么重复请求不是边角问题<a class="heading-anchor" href="#business" aria-label="链接到业务背景">#</a></h2>
+        <p>客户端超时重试、消息重复投递和人工重复操作，都可能让同一业务意图到达服务多次。真正的问题不是“接口被调用两次”，而是业务副作用可能发生两次。</p>
+
+        <div class="evidence-card" data-evidence="inference">
+          <p class="evidence-label">业务推断</p>
+          <p>这里应替换成从仓库文档、接口命名和领域对象推导出的真实业务情境；无法确认的规模、损失和线上表现必须保持为推断。</p>
+        </div>
+
+        <h2 id="flow">业务流程：幂等判断放在哪里<a class="heading-anchor" href="#flow" aria-label="链接到业务流程">#</a></h2>
+        <div class="diagram-shell">
+          <div class="diagram-label">请求时序图</div>
+          <pre class="mermaid">sequenceDiagram
+    participant C as 客户端
+    participant A as API
+    participant I as 幂等存储
+    participant D as 业务数据库
+    C->>A: POST /orders + Idempotency-Key
+    A->>I: 尝试登记 processing
+    alt 首次请求
+      I-->>A: 登记成功
+      A->>D: 写入业务数据
+      D-->>A: 提交成功
+      A->>I: 保存响应并标记 completed
+      A-->>C: 201 Created
+    else 重复请求
+      I-->>A: 返回已有状态/响应
+      A-->>C: 重放一致响应
+    end</pre>
+        </div>
+        <p>图之后必须有文字解释：幂等记录和业务写入是否位于同一事务边界，决定了崩溃窗口如何处理。</p>
+
+        <h2 id="implementation">How → What：核心实现<a class="heading-anchor" href="#implementation" aria-label="链接到核心实现">#</a></h2>
+        <p>伪代码只压缩控制流，不改变源码语义，并通过下方证据块回溯到真实符号。</p>
+        <div class="code-shell"><pre><code class="language-text">handle(command, key):
+  record = idempotency.claim(key)
+  if record.completed:
+    return record.saved_response
+
+  result = transaction:
+    entity = repository.create(command)
+    idempotency.complete(key, response_for(entity))
+
+  return result</code></pre></div>
+
+        <div class="evidence-card" data-evidence="repository">
+          <p class="evidence-label">仓库源码证据</p>
+          <p><code>src/orders/create-order.ts:42</code> · <code>CreateOrder.execute</code>：替换为当前仓库中实际的文件、符号与行号，并说明它支持了上文哪个判断。</p>
+        </div>
+
+        <h2 id="comparison">方案对比：复杂度为什么逐级增加<a class="heading-anchor" href="#comparison" aria-label="链接到方案对比">#</a></h2>
+        <div class="comparison-grid">
+          <section class="comparison-card">
+            <p class="comparison-tier">LEVEL 1 · 基础实现</p>
+            <h3>进程内去重</h3>
+            <p>成本低，但跨实例失效，重启后丢失，也无法与业务提交建立可靠边界。</p>
+          </section>
+          <section class="comparison-card is-current">
+            <p class="comparison-tier">LEVEL 2 · 仓库现状</p>
+            <h3>持久化幂等记录</h3>
+            <p>解决多实例与重启问题；仍需检查事务边界、记录过期和热点键。</p>
+          </section>
+          <section class="comparison-card is-sota">
+            <p class="comparison-tier">LEVEL 3 · SOTA 方向（可选）</p>
+            <h3>工作流状态机</h3>
+            <p>适合长事务与多阶段补偿，但引入基础设施、迁移和运维成本；必须用最新一手资料核验。</p>
+          </section>
+        </div>
+
+        <div class="evidence-card" data-evidence="external">
+          <p class="evidence-label">外部研究证据 · 检索日期 YYYY-MM-DD</p>
+          <p><a href="https://example.com">替换为官方文档或论文</a>。写清该资料支持的 SOTA 判断、方案成熟度和不采用它的条件。</p>
+        </div>
+
+        <h2 id="observability">埋点与可观测性<a class="heading-anchor" href="#observability" aria-label="链接到埋点与可观测性">#</a></h2>
+        <table>
+          <thead><tr><th>位置</th><th>信号</th><th>目的</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr><td>claim 之后</td><td><code>idempotency_outcome</code></td><td>区分首次、处理中和重放</td><td>建议新增</td></tr>
+            <tr><td>事务提交</td><td>trace span + error</td><td>定位副作用与记录不同步</td><td>仓库已有</td></tr>
+          </tbody>
+        </table>
+
+        <h2 id="interview">面试怎么讲<a class="heading-anchor" href="#interview" aria-label="链接到面试讲述">#</a></h2>
+        <blockquote><p>先讲重复请求造成的业务风险，再讲一致性边界；随后说明仓库方案解决了什么，最后主动补充崩溃窗口和演进方向。不要编造个人贡献或线上指标。</p></blockquote>
+        <h3>可能追问</h3>
+        <ul>
+          <li>幂等键由客户端生成还是服务端生成？为什么？</li>
+          <li>业务已成功、幂等状态未更新时如何恢复？</li>
+          <li>幂等记录应该保留多久，容量怎么估算？</li>
+        </ul>
+
+        <h2 id="self-test">自测：给退款接口补全幂等设计<a class="heading-anchor" href="#self-test" aria-label="链接到自测">#</a></h2>
+        <section class="self-test">
+          <p class="eyebrow">交付物</p>
+          <p>画出退款请求时序图，标记幂等记录、业务写入、外部支付调用和失败恢复边界；再用 90 秒口述方案。</p>
+        </section>
+        <section class="success-criteria">
+          <p class="eyebrow">成功标准</p>
+          <ul>
+            <li>覆盖首次、重复、处理中和部分失败四条路径。</li>
+            <li>所有状态转换都能对应到存储动作。</li>
+            <li>能指出至少一个当前方案仍未解决的故障窗口。</li>
+            <li>90 秒讲述遵循背景 → Why → How → What → 取舍。</li>
+          </ul>
+        </section>
+
+        <div class="quiz-list" data-quiz data-quiz-id="lesson-03-idempotency">
+          <section class="question" data-question data-answer="B">
+            <p class="question-prompt">哪个信号最能直接证明一次响应来自幂等重放？</p>
+            <div class="choices">
+              <button class="choice" type="button" data-choice="A" aria-pressed="false">A · 请求耗时下降</button>
+              <button class="choice" type="button" data-choice="B" aria-pressed="false">B · outcome 为 replay</button>
+              <button class="choice" type="button" data-choice="C" aria-pressed="false">C · 状态码为成功</button>
+              <button class="choice" type="button" data-choice="D" aria-pressed="false">D · 数据库无报错</button>
+            </div>
+            <p class="feedback" data-feedback data-correct="正确。显式 outcome 能区分首次成功与响应重放。" data-wrong="还不能区分首次成功和幂等重放，请寻找语义最直接的业务信号。" aria-live="polite"></p>
+          </section>
+          <div class="quiz-footer">
+            <span class="quiz-score" data-score aria-live="polite"></span>
+            <button type="button" data-reset>重新作答</button>
+          </div>
+        </div>
+
+        <nav class="page-pager" aria-label="课程翻页">
+          <a class="pager-link" href="#"><span>上一课</span><strong>请求生命周期</strong></a>
+          <a class="pager-link next" href="#"><span>下一课</span><strong>失败恢复与补偿</strong></a>
+        </nav>
+      </article>
+      <footer class="site-footer">课程内容应以当前仓库证据和已批准的 COURSE-PLAN.md 为准。</footer>
+    </main>
+
+    <!-- 右侧只呈现当前这一课的页内 H2/H3 导航。 -->
+    <aside class="page-toc" aria-label="本课目录">
+      <div class="toc-title">本页内容</div>
+      <a class="toc-link" href="#business">业务背景</a>
+      <a class="toc-link" href="#flow">业务流程</a>
+      <a class="toc-link" href="#implementation">核心实现</a>
+      <a class="toc-link" href="#comparison">方案对比</a>
+      <a class="toc-link" href="#observability">埋点与可观测性</a>
+      <a class="toc-link" href="#interview">面试怎么讲</a>
+      <a class="toc-link" href="#self-test">自测与标准</a>
+    </aside>
+  </div>
+
+  <script>
+    window.NOVA_SITE = {
+      search: [
+        { title: "请求幂等性设计", group: "核心业务模块", headings: ["业务流程", "核心实现", "方案对比"], summary: "从重复提交到一致性边界", href: "#business" }
+      ]
+    };
+  </script>
+  <script src="../assets/mermaid.min.js"></script>
+  <script src="../assets/app.js"></script>
+  <script src="../assets/quiz.js"></script>
+</body>
+</html>
