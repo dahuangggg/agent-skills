@@ -12,6 +12,20 @@ The skill is language- and framework-neutral. It selects Agent-system, distribut
 
 Location: [`skills/project-interview-prep`](skills/project-interview-prep)
 
+### teach
+
+Scans a software repository and builds a source-backed HTML course for knowledge mastery or interview preparation. It includes learner diagnostics, an approval-gated course plan, repository architecture and flow diagrams, interactive exercises, source citations, and systematic revision.
+
+Location: [`skills/teach`](skills/teach)
+
+Install this skill with:
+
+```bash
+python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
+  --repo dahuangggg/agent-skills \
+  --path skills/teach
+```
+
 ## Install with Codex
 
 ```bash
