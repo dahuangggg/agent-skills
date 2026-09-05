@@ -1,0 +1,6 @@
+interface:
+  display_name: "初始化项目协作规范"
+  short_description: "探索仓库并创建 Agent 工作指南、文档组织与按 ISO 周归档的交接文件"
+  default_prompt: "使用 $init-my-project 探索当前仓库，生成 AGENTS.md 和 _session_handoff.md 审核稿，确认后写入。"
+policy:
+  allow_implicit_invocation: false
